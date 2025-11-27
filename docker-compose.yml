@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: cloud-master-app
+    restart: always
+    ports:
+      - "80:5000"
+    environment:
+      - NODE_ENV=production
+      - MONGO_URI=mongodb://mongo:27017/cloudmaster
+      - JWT_SECRET=change_this_secret
+      
+      # --- Aliyun Config ---
+      - ALIYUN_ACCESS_KEY_ID=${ALIYUN_ACCESS_KEY_ID}
+      - ALIYUN_ACCESS_KEY_SECRET=${ALIYUN_ACCESS_KEY_SECRET}
+      - ALIYUN_BUCKET=${ALIYUN_BUCKET}
+      - ALIYUN_REGION=${ALIYUN_REGION}
+
+      # --- WebDAV (Alist) Config ---
+      - WEBDAV_URL=${WEBDAV_URL}
+      - WEBDAV_USER=${WEBDAV_USER}
+      - WEBDAV_PASSWORD=${WEBDAV_PASSWORD}
+
+      # --- OpenAI Config ---
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_BASE_URL=${OPENAI_BASE_URL}
+
+      # --- Alipay Config ---
+      - ALIPAY_APP_ID=${ALIPAY_APP_ID}
+      - ALIPAY_PRIVATE_KEY=${ALIPAY_PRIVATE_KEY}
+      - ALIPAY_PUBLIC_KEY=${ALIPAY_PUBLIC_KEY}
+      - ALIPAY_NOTIFY_URL=${ALIPAY_NOTIFY_URL}
+
+    depends_on:
+      - mongo
+    volumes:
+      - ./downloads:/app/downloads
+
+  mongo:
+    image: mongo:latest
+    container_name: cloud-master-mongo
+    restart: always
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:
